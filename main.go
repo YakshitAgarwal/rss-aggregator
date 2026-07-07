@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/YakshitAgarwal/rss-aggregator/internal/database"
 	"github.com/go-chi/chi"
@@ -36,9 +37,12 @@ func main() {
 		log.Fatal("Can't connect to database:", err)
 	}
 
+	db := database.New(connection)
 	apiCfg := apiConfig{
-		DB: database.New(connection),
+		DB: db,
 	}
+
+	go startScarping(db, 10, time.Minute)
 
 	router := chi.NewRouter()
 
